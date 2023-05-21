@@ -1,0 +1,24 @@
+[
+  {
+    "model": "levelupapi.event",
+    "pk": 1,
+    "fields": {
+      "game": 1,
+      "description": "Join us for an epic Jedi Survivor tournament!",
+      "date": "2023-06-01",
+      "time": "18:00:00",
+      "organizer": 1
+    }
+  },
+  {
+    "model": "levelupapi.event",
+    "pk": 2,
+    "fields": {
+      "game": 2,
+      "description": "Test your skills in an intense God of War battle!",
+      "date": "2023-06-15",
+      "time": "20:00:00",
+      "organizer": 1
+    }
+  }
+]

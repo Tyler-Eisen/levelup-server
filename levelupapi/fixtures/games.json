@@ -1,0 +1,26 @@
+[
+  {
+    "model": "levelupapi.game",
+    "pk": 1,
+    "fields": {
+      "game_type": 1,
+      "title": "Jedi Survivor",
+      "maker": "Electronic Arts",
+      "gamer": 1,
+      "number_of_players": 1,
+      "skill_level": 4
+    }
+  },
+  {
+    "model": "levelupapi.game",
+    "pk": 2,
+    "fields": {
+      "game_type": 1,
+      "title": "God of War",
+      "maker": "Santa Monica Studio",
+      "gamer": 1,
+      "number_of_players": 1,
+      "skill_level": 5
+    }
+  }
+]
