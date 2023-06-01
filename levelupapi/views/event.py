@@ -6,9 +6,11 @@ from levelupapi.models import Event, Game, Gamer
 
 class EventSerializer(serializers.ModelSerializer):
     """JSON serializer for Event types"""
+    time = serializers.TimeField(format="%I:%M %p")
+    date = serializers.DateField(format="%B %d, %Y")
     class Meta:
         model = Event
-        fields = ('id', 'description', 'date', 'time', 'organizer')
+        fields = ('id', 'game', 'description', 'date', 'time', 'organizer')
 
 class EventView(ViewSet):
     """Level up Event types view"""
@@ -67,8 +69,8 @@ class EventView(ViewSet):
       event.organizer = organizer
 
       event.save()
-
-      return Response(None, status=status.HTTP_204_NO_CONTENT)
+      serializer = EventSerializer(event)
+      return Response(serializer.data, status=status.HTTP_201_CREATED)
     
     def destroy(self, request, pk):
       event = Event.objects.get(pk=pk)
