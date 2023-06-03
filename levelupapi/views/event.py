@@ -2,7 +2,8 @@ from django.http import HttpResponseServerError
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers, status
-from levelupapi.models import Event, Game, Gamer
+from levelupapi.models import Event, Game, Gamer, EventGamer
+from rest_framework.decorators import action
 
 class EventSerializer(serializers.ModelSerializer):
     """JSON serializer for Event types"""
@@ -10,7 +11,9 @@ class EventSerializer(serializers.ModelSerializer):
     date = serializers.DateField(format="%B %d, %Y")
     class Meta:
         model = Event
-        fields = ('id', 'game', 'description', 'date', 'time', 'organizer')
+        fields = ('id', 'game', 'organizer',
+          'description', 'date', 'time',
+          'joined')
 
 class EventView(ViewSet):
     """Level up Event types view"""
@@ -32,6 +35,15 @@ class EventView(ViewSet):
             Response -- JSON serialized list of Event types
         """
         events = Event.objects.all()
+        
+        uid = request.META['HTTP_AUTHORIZATION']
+        gamer = Gamer.objects.get(uid=uid)
+
+        for event in events:
+    
+          event.joined = len(EventGamer.objects.filter(
+          gamer=gamer, event=event)) > 0
+
         serializer = EventSerializer(events, many=True)
         return Response(serializer.data)
     
@@ -77,3 +89,27 @@ class EventView(ViewSet):
       event.delete()
       return Response(None, status=status.HTTP_204_NO_CONTENT)
     
+    @action(methods=['post'], detail=True)
+    def signup(self, request, pk):
+      """Post request for a user to sign up for an event"""
+      gamer = Gamer.objects.get(uid=request.data["userId"])
+      event = Event.objects.get(pk=pk)
+      attendee = EventGamer.objects.create(
+        gamer=gamer,
+        event=event
+    )
+      return Response({'message': 'Gamer added'}, status=status.HTTP_201_CREATED)
+    
+    @action(methods=['delete'], detail=True)
+    def leave(self, request, pk=None):
+      """Delete request for a user to leave an event"""
+
+      # Get the gamer and event objects
+      gamer = Gamer.objects.get(uid=request.data["userId"])
+      event = Event.objects.get(pk=pk)
+
+      # Find and remove the event_gamer object
+      event_gamer = EventGamer.objects.get(gamer=gamer, event=event)
+      event_gamer.delete()
+
+      return Response({'message': 'Gamer removed'}, status=status.HTTP_204_NO_CONTENT)
